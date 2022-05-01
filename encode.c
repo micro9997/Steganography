@@ -115,7 +115,7 @@ Status copy_bmp_header(FILE *fptr_src_image, FILE *fptr_dest_image) {
     return e_success;
 }
 
-Status encode_magic_string(const char *magic_string, EncodeInfo *encInfo) {
+Status encode_magic_string(char *magic_string, EncodeInfo *encInfo) {
     encode_data_to_image(magic_string, strlen(magic_string), encInfo->fptr_src_image, encInfo->fptr_stego_image, encInfo);
     return e_success;
 }

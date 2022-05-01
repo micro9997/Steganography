@@ -8,6 +8,7 @@ int main(int argc, char**argv) {
     if(check_operation_type(argv) == e_encode) {
         printf("choosen encodeing process\n");
         EncodeInfo encInfo;
+        // printf("%d\n", read_and_validate_encode_args(argv, &encInfo));
         if(read_and_validate_encode_args(argv, &encInfo) == e_success) {
             printf("SUCESS : Read and validate of encode args\n");
             printf("Encodeing process started ......\n");
