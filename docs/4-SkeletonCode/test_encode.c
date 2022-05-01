@@ -3,7 +3,8 @@
 #include "encode.h"
 #include "types.h"
 
-int main() {
+int main()
+{
     EncodeInfo encInfo;
     uint img_size;
 
@@ -13,10 +14,13 @@ int main() {
     encInfo.stego_image_fname = "stego_img.bmp";
 
     // Test open_files
-    if (open_files(&encInfo) == e_failure) {
+    if (open_files(&encInfo) == e_failure)
+    {
     	printf("ERROR: %s function failed\n", "open_files" );
     	return 1;
-    } else {
+    }
+    else
+    {
     	printf("SUCCESS: %s function completed\n", "open_files" );
     }
 
