@@ -1,28 +1,47 @@
 
 #include <stdio.h>
+#include <string.h>
 #include "encode.h"
 #include "types.h"
 
-int main() {
-    EncodeInfo encInfo;
-    uint img_size;
+int main(int argc, char**argv) {
+    if(check_operation_type(argv) == e_encode) {
+        printf("choosen encodeing process\n");
+        EncodeInfo encInfo;
+        if(read_and_validate_encode_args(argv, &encInfo) == e_success) {
+            printf("SUCESS : Read and validate of encode args\n");
+            printf("Encodeing process started ......\n");
+            if(do_encoding(&encInfo) == e_success) {
+                printf("SUCESS: Enodeing process\n");
+            } else {
+                printf("Falies: Encoding process\n");
+                return 1;
+            }
+        } else {
+            printf("Failes : Read and validate of encode args\n");
+            return 1;
+        }
 
-    // Fill with sample filenames
-    encInfo.src_image_fname = "beautiful.bmp";
-    encInfo.secret_fname = "secret.txt";
-    encInfo.stego_image_fname = "stego_img.bmp";
+    } else if(check_operation_type(argv) == e_decode) {
+        printf("choosen decodeing process\n");
 
-    // Test open_files
-    if (open_files(&encInfo) == e_failure) {
-    	printf("ERROR: %s function failed\n", "open_files" );
-    	return 1;
     } else {
-    	printf("SUCCESS: %s function completed\n", "open_files" );
+        printf("Ivalid Input \n please pass Encode : ./a.out -e beautiful.bmp secret.txt stego.bmp\n Decode : .a/out -d stego.bmp decode.txt\n");
+
     }
 
-    // Test get_image_size_for_bmp
-    img_size = get_image_size_for_bmp(encInfo.fptr_src_image);
-    printf("INFO: Image size = %u\n", img_size);
-
     return 0;
+}
+
+OperationType check_operation_type(char *argv[]) {
+    if(strcmp(argv[1], "-e") == 0) {
+        return e_encode;
+
+    } else if(strcmp(argv[1], "-d") == 0) {
+        return e_decode;
+
+    } else {
+        e_unsupported;
+
+    }
 }
