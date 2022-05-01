@@ -58,7 +58,7 @@ uint get_image_size_for_bmp(FILE *fptr_image) {
  * Return Value: _success or _failure, on file errors
  */
 
-Status open_files (EncodeInfo *encInfo) {
+Status open_files(EncodeInfo *encInfo) {
     // Sc Image file
     encInfo->fptr_src_image = fopen(encInfo->src_image_fname, "r");
     // Do Error handling
@@ -131,7 +131,7 @@ Status encode_data_to_image(char *data, int size, FILE *fptr_src_image, FILE *fp
     return e_success;
 }
 
-Status encode_byte_to_1sb(char data, char *image_buffer) {
+Status encode_byte_to_lsb(char data, char *image_buffer) {
     unsigned int mask = 1 << 7;
     int i;
     for(i= 0; i < 8; i++) {
@@ -183,7 +183,7 @@ Status encode_secret_file_data(EncodeInfo *encInfo) {
     return e_success;
 }
 
-Status copy_remaining_ing_data(FILE *fptr_src, FILE *fptr_dest) {
+Status copy_remaining_img_data(FILE *fptr_src, FILE *fptr_dest) {
     printf("in function copy");
     char ch;
     while(fread(&ch, 1, 1, fptr_src) > 0) {
@@ -197,9 +197,9 @@ Status do_encoding(EncodeInfo *encInfo) {
         printf("SUCESS: OPEN FILES\n");
         if (check_capacity(encInfo) == e_success) {
             printf ("SUCCESS: Check capacity\n");
-            if (copy_bmp_header (encInfo->fptr_src_image, encInfo->fptr_stego_image) == e_success) {
+            if (copy_bmp_header(encInfo->fptr_src_image, encInfo->fptr_stego_image) == e_success) {
                 printf("SUCCESS: Copy bmp header\n");
-                if(encode_magic_string (MAGIC_STRING, encInfo) == e_success) {
+                if(encode_magic_string(MAGIC_STRING, encInfo) == e_success) {
                     printf("SUCCESS: Magic string encodeing\n");
                     strcpy(encInfo->extn_secret_file, strstr(encInfo->secret_fname, "."));
                     if(encode_secret_file_extn_size(strlen(encInfo->extn_secret_file), encInfo->fptr_src_image, encInfo->fptr_stego_image) == e_success) {
