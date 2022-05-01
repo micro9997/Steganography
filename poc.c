@@ -1,9 +1,8 @@
 
-// #include <stdio.h>
-// #include "common.h"
+#include <stdio.h>
+#include <string.h>
 
-// int main() {
-//     printf("%s\n", MAGIC_STRING);
+int main() {
 
-//     return 0;
-// }
+    return 0;
+}
