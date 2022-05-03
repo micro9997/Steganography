@@ -38,57 +38,63 @@ typedef struct _EncodeInfo {
 
 /* Encoding function prototype */
 
-/* Check operation type */
+/* 01. Check operation type */
 OperationType check_operation_type(char *argv[]);
 
-/* Read and validate Encode args from argv */
-Status read_and_validate_encode_args(char *argv[], EncodeInfo *encInfo); // Done
+/* 02. Read and validate Encode args from argv */
+Status read_and_validate_encode_args(char *argv[], EncodeInfo *encInfo); // Done // Understand
 
-/* Perform the encoding */
-Status do_encoding(EncodeInfo *encInfo); // Done
+/* 03. Perform the encoding */
+Status do_encoding(EncodeInfo *encInfo); // Done // Understood -
 
-/* Get File pointers for i/p and o/p files */
-Status open_files(EncodeInfo *encInfo); // Done
+/* 04. Get File pointers for i/p and o/p files */
+Status open_files(EncodeInfo *encInfo); // Done // Understand
 
-/* check capacity */
-Status check_capacity(EncodeInfo *encInfo); // Done
+/* 05. check capacity */
+Status check_capacity(EncodeInfo *encInfo); // Done // Understood -
 
-/* Get image size */
-uint get_image_size_for_bmp(FILE *fptr_image); // Done
+/* 06. Get image size */
+uint get_image_size_for_bmp(FILE *fptr_image); // Done // Understand
 
-/* Get file size */
-uint get_file_size(FILE *fptr); // Done
+/* 07. Get file size */
+uint get_file_size(FILE *fptr); // Done // Understood
 
-/* Copy bmp image header */
-Status copy_bmp_header(FILE *fptr_src_image, FILE *fptr_dest_image); // Done
+/* 08. Copy bmp image header */
+Status copy_bmp_header(FILE *fptr_src_image, FILE *fptr_dest_image); // Done // Understood
 
-/* Store Magic String */
-// Status encode_magic_string(const char *magic_string, EncodeInfo *encInfo); // Done
-Status encode_magic_string(char *magic_string, EncodeInfo *encInfo); // Done
+/* 09. Store Magic String */
+// Status encode_magic_string(const char *magic_string, EncodeInfo *encInfo);
+Status encode_magic_string(char *magic_string, EncodeInfo *encInfo); // Done // Understood
 
-/* Encode secret file extenstion siz */
-Status encode_secret_file_extn_size(int size, FILE *fptr_src_image, FILE *fptr_stego_image); // Done
+/* 10. Encode secret file extenstion siz */
+Status encode_secret_file_extn_size(int size, FILE *fptr_src_image, FILE *fptr_stego_image); // Done // Understood
 
-/* Encode secret file extenstion */
-Status encode_secret_file_extn(char *file_extn, EncodeInfo *encInfo); // Done
+/* 11. Encode secret file extenstion */
+Status encode_secret_file_extn(char *file_extn, EncodeInfo *encInfo); // Done // Understood
 
-/* Encode secret file size */
-Status encode_secret_file_size(long file_size, EncodeInfo *encInfo); // Done
+/* 12. Encode secret file size */
+Status encode_secret_file_size(long file_size, EncodeInfo *encInfo); // Done // Understood
 
-/* Encode secret file data*/
-Status encode_secret_file_data(EncodeInfo *encInfo); // Done
+/* 13. Encode secret file data*/
+Status encode_secret_file_data(EncodeInfo *encInfo); // Done // Understood -
 
-/* Encode function, which does the real encoding */
+/* 14. Encode function, which does the real encoding */
 // Status encode_data_to_image(char *data, int size, FILE *fptr_src_image, FILE *fptr_stego_image);
-Status encode_data_to_image(char *data, int size, FILE *fptr_src_image, FILE *fptr_stego_image, EncodeInfo *encInfo); // Done
+Status encode_data_to_image(char *data, int size, FILE *fptr_src_image, FILE *fptr_stego_image, EncodeInfo *encInfo); // Done // Understood
 
-/* Encode a byte into LSB of image data array */
-Status encode_byte_to_lsb(char data, char *image_buffer); // Done
+/* 15. Encode a byte into LSB of image data array */
+Status encode_byte_to_lsb(char data, char *image_buffer); // Done // Understood // Impo
 
-/* Encode  size to lsb */
-Status encode_size_to_lsb(char *image_buffer, int size); // Done
+/* 16. Encode size to lsb */
+Status encode_size_to_lsb(char *image_buffer, int size); // Done // Understood
 
-/* Copy remaining image bytes from src to stego image after encoding */
-Status copy_remaining_img_data(FILE *fptr_src, FILE *fptr_dest); // Done
+/* 17. Copy remaining image bytes from src to stego image after encoding */
+Status copy_remaining_img_data(FILE *fptr_src, FILE *fptr_dest); // Done // Understood
+
+
+// Decode
+
+// Perform the decoding
+Status do_decoding(EncodeInfo *encInfo);
 
 #endif
