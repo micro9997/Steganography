@@ -75,7 +75,7 @@ Status encode_secret_file_extn(char *file_extn, EncodeInfo *encInfo); // Done //
 /* 12. Encode secret file size */
 Status encode_secret_file_size(long file_size, EncodeInfo *encInfo); // Done // Understood
 
-/* 13. Encode secret file data*/
+/* 13. Encode secret file data */
 Status encode_secret_file_data(EncodeInfo *encInfo); // Done // Understood -
 
 /* 14. Encode function, which does the real encoding */
@@ -92,7 +92,24 @@ Status encode_size_to_lsb(char *image_buffer, int size); // Done // Understood
 Status copy_remaining_img_data(FILE *fptr_src, FILE *fptr_dest); // Done // Understood
 
 
-// Decode
+// Decoding
+
+// Read and validate Encode args from argv
+Status read_and_validate_decode_args(char *argv[], EncodeInfo *encInfo);
+
+// Get File pointers for i/p and o/p files
+Status open_files_for_decoding(EncodeInfo *encInfo);
+
+// Read Magic String
+Status decode_magic_string(char *magic_string, EncodeInfo *encInfo);
+
+// Decode function, which does the real encoding
+// Status decode_data_from_image(char *data, int size, FILE *fptr_stego_image);
+Status decode_data_from_image(char *data, int size, EncodeInfo *encInfo);
+
+// Decode a byte into LSB of image data array
+// Status decode_byte_from_lsb(char data, char *image_buffer);
+Status decode_byte_from_lsb(EncodeInfo *encInfo);
 
 // Perform the decoding
 Status do_decoding(EncodeInfo *encInfo);

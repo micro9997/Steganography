@@ -124,7 +124,7 @@ Status encode_magic_string(char *magic_string, EncodeInfo *encInfo) { // Underst
 Status encode_data_to_image(char *data, int size, FILE *fptr_src_image, FILE *fptr_stego_image, EncodeInfo * encInfo) { // Understood
     int i;
     for(i = 0; i < size; i++) {
-        fread(encInfo->image_data,sizeof(char), 8, encInfo->fptr_src_image);
+        fread(encInfo->image_data, sizeof(char), 8, encInfo->fptr_src_image);
         encode_byte_to_lsb(data[i], encInfo->image_data);
         fwrite(encInfo->image_data, sizeof(char), 8, encInfo->fptr_stego_image);
     }
@@ -270,7 +270,141 @@ Status do_encoding(EncodeInfo *encInfo) { // Understood
     return e_success;
 }
 
+
+// Decoding
+
+Status read_and_validate_decode_args(char *argv[], EncodeInfo *encInfo) {
+    if (strcmp(strstr(argv[2], ".bmp"), ".bmp") == 0) {
+        encInfo->stego_image_fname = argv[2];
+    } else {
+        return e_failure;
+    }
+    if (argv[3] != NULL ) {
+        encInfo->secret_fname = argv[3];
+    } else {
+        encInfo->secret_fname = "decode.txt";
+    }
+    return e_success;
+}
+
+Status open_files_for_decoding(EncodeInfo *encInfo) {
+    // Stego Image file
+    encInfo->fptr_stego_image = fopen(encInfo->stego_image_fname, "r");
+    // Do Error handling
+    if(encInfo->fptr_stego_image == NULL) {
+        perror("fopen");
+        fprintf(stderr, "ERROR: Unable to open file %s\n", encInfo->stego_image_fname);
+        return e_failure;
+    }
+
+    // Secret file
+    encInfo->fptr_secret = fopen(encInfo->secret_fname, "w");
+    // Do Error handling
+    if(encInfo->fptr_secret == NULL) {
+        perror("fopen");
+        fprintf(stderr, "ERROR: Unable to open file %s\n", encInfo->secret_fname);
+    
+        return e_failure;
+    }
+    
+    // No failure return e_success
+    return e_success;
+}
+
+Status decode_magic_string(char *magic_string, EncodeInfo *encInfo) {
+    if(decode_data_from_image(magic_string, strlen(magic_string), encInfo) == e_success) {
+
+        return e_success;
+    } else {
+
+        return e_failure;
+    }
+}
+
+Status decode_data_from_image(char *data, int size, EncodeInfo *encInfo) {
+    short int sen = 0;
+    fseek(encInfo->fptr_stego_image, 55, SEEK_SET);
+    for(int i = 0; i < 1; i++) {
+        decode_byte_from_lsb(encInfo);
+        if(data[i] == *(encInfo->secret_data)) {
+            sen++;
+        }
+    }
+    // printf("%d\n", sen);
+    if(sen == size) {
+
+        return e_success;
+    } else {
+
+        return e_failure;
+    }
+
+    // int i;
+    // for(i = 0; i < size; i++) {
+    //     fread(encInfo->image_data, sizeof(char), 8, encInfo->fptr_src_image);
+    //     decode_byte_to_lsb(data[i], encInfo->image_data);
+    //     fwrite(encInfo->image_data, sizeof(char), 8, encInfo->fptr_stego_image);
+    // }
+    // return e_success;
+}
+
+Status decode_byte_from_lsb(EncodeInfo *encInfo) {
+    char ch; char *str = &ch;
+    unsigned char x = 0; unsigned char y = 0;
+    for(int i = 0; i < 8; i++) {
+        fread(str, sizeof(char), 1, encInfo->fptr_stego_image);
+        printf("Data: %d\n", *str);
+        // *str = i;
+        // x = x | (*str & 1);
+        // x = x << 1;
+    }
+    // for(int i = 0; i < 8; i++) {
+    //     unsigned int mask = 1 << (7 - i);
+    //     y = x 
+    // }
+    // printf("ch: %d\n", y);
+
+    // uint width, heght;
+    // // Seek to 18th byte
+    // fseek(fptr_image, 18, SEEK_SET);
+
+    // // Read the width (an int)
+    // fread(&width, sizeof(int), 1, fptr_image);
+    // printf("width = %u\n", width);
+
+    // // Read the height (an int)
+    // fread(&heght, sizeof(int), 1, fptr_image);
+    // printf("height = %u\n", heght);
+
+    // // Return image capacity
+    // return width * heght * 3;
+
+
+    // unsigned int mask = 1 << 7;
+    // int i;
+    // for(i= 0; i < 8; i++) {
+    //     image_buffer[i] = ((image_buffer[i] & 0xFE) | (data & mask) >> (7 - i));
+    // }    
+}
+
 Status do_decoding(EncodeInfo *encInfo) {
+    if(open_files_for_decoding(encInfo) == e_success) {
+        printf("SUCCESS: OPEN FILES\n");
+        if(decode_magic_string(MAGIC_STRING, encInfo) == e_success) {
+            printf("SUCCESS: Magic string decodeing\n");
+            return e_success;
+
+        } else {
+            printf("FAILES: Magic string decodeing\n");
+
+            return e_failure;
+        }
+
+    } else {
+        printf("FAILES: OPEN FILES\n");
+
+        return e_failure;
+    }
 
     return e_success;
 }
