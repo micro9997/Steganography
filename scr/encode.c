@@ -110,6 +110,7 @@ uint get_file_size(FILE *fptr) { // Understood
 Status copy_bmp_header(FILE *fptr_src_image, FILE *fptr_dest_image) { // Understood
     char str[54];
     fseek(fptr_src_image, 0, SEEK_SET);
+    fseek(fptr_dest_image, 0, SEEK_SET);
     fread(str, sizeof(char), 54, fptr_src_image);
     fwrite(str, sizeof(char), 54, fptr_dest_image);
     return e_success;
@@ -136,6 +137,7 @@ Status encode_byte_to_lsb(char data, char *image_buffer) { // Understood // Impo
     int i;
     for(i= 0; i < 8; i++) {
         image_buffer[i] = ((image_buffer[i] & 0xFE) | (data & mask) >> (7 - i));
+        mask = mask  >> 1;
     }    
 }
 
@@ -144,7 +146,8 @@ Status encode_size_to_lsb(char *image_buffer, int size) { // Understood
     int i;
     for(i = 0; i < 32; i++) {
         image_buffer[i] = ((image_buffer[i] & 0xFE) | (size & mask) >> (31 - i));
-        mask = mask - 1;
+        // mask = mask - 1;
+        mask = mask >> 1;
     }
 }
 
@@ -313,18 +316,16 @@ Status open_files_for_decoding(EncodeInfo *encInfo) {
 
 Status decode_magic_string(char *magic_string, EncodeInfo *encInfo) {
     if(decode_data_from_image(magic_string, strlen(magic_string), encInfo) == e_success) {
-
         return e_success;
     } else {
-
         return e_failure;
     }
 }
 
 Status decode_data_from_image(char *data, int size, EncodeInfo *encInfo) {
     short int sen = 0;
-    fseek(encInfo->fptr_stego_image, 55, SEEK_SET);
-    for(int i = 0; i < 1; i++) {
+    fseek(encInfo->fptr_stego_image, 54, SEEK_SET);
+    for(int i = 0; i < size; i++) {
         decode_byte_from_lsb(encInfo);
         if(data[i] == *(encInfo->secret_data)) {
             sen++;
@@ -332,59 +333,66 @@ Status decode_data_from_image(char *data, int size, EncodeInfo *encInfo) {
     }
     // printf("%d\n", sen);
     if(sen == size) {
-
         return e_success;
     } else {
-
         return e_failure;
     }
-
-    // int i;
-    // for(i = 0; i < size; i++) {
-    //     fread(encInfo->image_data, sizeof(char), 8, encInfo->fptr_src_image);
-    //     decode_byte_to_lsb(data[i], encInfo->image_data);
-    //     fwrite(encInfo->image_data, sizeof(char), 8, encInfo->fptr_stego_image);
-    // }
-    // return e_success;
 }
 
 Status decode_byte_from_lsb(EncodeInfo *encInfo) {
-    char ch; char *str = &ch;
-    unsigned char x = 0; unsigned char y = 0;
+    unsigned char ch; char *str = &ch;
     for(int i = 0; i < 8; i++) {
         fread(str, sizeof(char), 1, encInfo->fptr_stego_image);
-        printf("Data: %d\n", *str);
-        // *str = i;
-        // x = x | (*str & 1);
-        // x = x << 1;
+        *(encInfo->secret_data) = *(encInfo->secret_data) << 1;
+        *(encInfo->secret_data) = *(encInfo->secret_data) | (*str & 1);
     }
-    // for(int i = 0; i < 8; i++) {
-    //     unsigned int mask = 1 << (7 - i);
-    //     y = x 
-    // }
-    // printf("ch: %d\n", y);
+}
 
-    // uint width, heght;
-    // // Seek to 18th byte
-    // fseek(fptr_image, 18, SEEK_SET);
+Status decode_secret_file_extn_size(EncodeInfo *encInfo) {
+    encInfo->extn_size_secret_file = 0;
+    fseek(encInfo->fptr_stego_image, 70, SEEK_SET);
+    for(int i = 0; i < 4; i++) {
+        decode_byte_from_lsb(encInfo);
+        encInfo->extn_size_secret_file = encInfo->extn_size_secret_file << 8;
+        encInfo->extn_size_secret_file = encInfo->extn_size_secret_file | (unsigned int)*(encInfo->secret_data);
+    }
+    // printf("%ld\n", encInfo->extn_size_secret_file);
+    return e_success;
+}
 
-    // // Read the width (an int)
-    // fread(&width, sizeof(int), 1, fptr_image);
-    // printf("width = %u\n", width);
+Status decode_secret_file_extn(EncodeInfo *encInfo) {
+    fseek(encInfo->fptr_stego_image, 102, SEEK_SET);
+    int i;
+    for(i = 0; i < encInfo->extn_size_secret_file; i++) {
+        decode_byte_from_lsb(encInfo);
+        encInfo->extn_secret_file[i] = *(encInfo->secret_data);
+    }
+    encInfo->extn_secret_file[i] = '\0';
+    // printf("%s\n", encInfo->extn_secret_file);
+    return e_success;
+}
 
-    // // Read the height (an int)
-    // fread(&heght, sizeof(int), 1, fptr_image);
-    // printf("height = %u\n", heght);
+Status decode_secret_file_size(EncodeInfo *encInfo) {
+    encInfo->size_secret_file = 0;
+    fseek(encInfo->fptr_stego_image, 134, SEEK_SET);
+    for(int i = 0; i < 4; i++) {
+        decode_byte_from_lsb(encInfo);
+        encInfo->size_secret_file = encInfo->size_secret_file << 8;
+        encInfo->size_secret_file = encInfo->size_secret_file | (unsigned int)*(encInfo->secret_data);
+    }
+    // printf("%ld\n", encInfo->size_secret_file);
+    return e_success;
+}
 
-    // // Return image capacity
-    // return width * heght * 3;
+Status decode_secret_file_data(EncodeInfo *encInfo) {
+    fseek(encInfo->fptr_stego_image, 166, SEEK_SET);
+    fseek(encInfo->fptr_secret, 0, SEEK_SET);
 
-
-    // unsigned int mask = 1 << 7;
-    // int i;
-    // for(i= 0; i < 8; i++) {
-    //     image_buffer[i] = ((image_buffer[i] & 0xFE) | (data & mask) >> (7 - i));
-    // }    
+    for(int i = 0; i < encInfo->size_secret_file; i++) {
+        decode_byte_from_lsb(encInfo);
+        fwrite(encInfo->secret_data, sizeof(char), 1, encInfo->fptr_secret);
+    }
+    return e_success;
 }
 
 Status do_decoding(EncodeInfo *encInfo) {
@@ -392,19 +400,50 @@ Status do_decoding(EncodeInfo *encInfo) {
         printf("SUCCESS: OPEN FILES\n");
         if(decode_magic_string(MAGIC_STRING, encInfo) == e_success) {
             printf("SUCCESS: Magic string decodeing\n");
-            return e_success;
+            if(decode_secret_file_extn_size(encInfo) == e_success) {
+                printf("SUCCESS: SECRET FILE EXTENSION SIZE\n");
+                if(decode_secret_file_extn(encInfo) == e_success) {
+                    printf("SUCCESS: SECRETE FILE EXTENSION\n");
+                    if(decode_secret_file_size(encInfo) == e_success) {
+                        printf("SUCCESS: DECODE SECRETE FILE SIZE \n");
+                        if(decode_secret_file_data(encInfo) == e_success) {
+                            printf("SUCCESS: DECODING SECRETE DATA\n" );
+
+                        } else {
+                            printf("FAILES: DECODING SECRETE DATA\n");
+                            return e_failure;
+                        }
+
+                    } else {
+                        printf("FAILES: DECODE SECRETE FILE SIZE \n");
+                        return e_failure;
+                    }
+
+                } else {
+                    printf("FAILES : SECRETE FILE EXTENSION\n");
+                    return e_failure;
+                }
+
+            } else {
+                printf("FALIES: SECRET_FILE EXTENSION SIZE\n");
+                return e_failure;
+            }
 
         } else {
             printf("FAILES: Magic string decodeing\n");
-
             return e_failure;
         }
 
     } else {
         printf("FAILES: OPEN FILES\n");
-
         return e_failure;
     }
-
     return e_success;
 }
+
+// open_files_for_decoding
+// decode_magic_string
+// decode_secret_file_extn_size
+// decode_secret_file_extn
+// decode_secret_file_size
+// decode_secret_file_data
