@@ -25,7 +25,7 @@ LSB Image Steganography
 
 ![image_3](https://github.com/micro9997/Steganography/blob/master/images/image_3.png)
 
-*This project expects us to Encode a message such a way that the quality of the image doesn't change much. So we can do encoding of bits from the message in the LSB of the RGB data.*
+*This project expects us to Encode a message such a way that the quality of the image doesn't change much. So we can do encoding of bits from the message in the `LSB` of the RGB data.*
 
 ***Design***
 
