@@ -4,6 +4,7 @@ LSB Image Steganography
 &nbsp;
 
 ### Introduction
+---
 
 *Steganography is a data-hiding technique used to hide a file, message, image, or video within another file, message, image, or video.*
 
@@ -12,6 +13,7 @@ LSB Image Steganography
 &nbsp;
 
 ### Methodology
+---
 
 *Image file formats are standardized means of organizing and storing digital images. Image files are composed of digital data in one of these formats that can be rasterized for use on a computer display or printer. An image file format may store data in uncompressed, compressed, or vector formats. Once rasterized, an image becomes a grid of pixels, each of which has a number of bits to designate its color equal to the color depth of the device displaying it.*
 
@@ -34,6 +36,7 @@ LSB Image Steganography
 &nbsp;
 
 ### Evaluation and result
+---
 
 ![image_1](https://github.com/micro9997/Steganography/blob/master/images/image_1.png)
 
